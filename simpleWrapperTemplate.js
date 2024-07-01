@@ -116,4 +116,17 @@ restApi.createPerson(object) // Will send request to api/people/ to create {obje
 restApi.updatePerson(3, object) // Will send request to api/people/3 to modify it with {object} contents
 restApi.deletePerson(2) // Will send request to delete api/people/2
 
+restApi.getPerson(1, e=> console.log(e))  // Example with callback
+
+// Usefull for React :)
+
+restApi.getPerson(1, e=> {
+    return `
+    <tr>${e.name}</tr>
+    <tr>${e.surname}</tr>
+    <tr>${e.age}</tr>
+    etc...
+    `
+    })
+
  */
