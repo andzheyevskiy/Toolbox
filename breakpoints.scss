@@ -1,0 +1,35 @@
+@mixin _media($breakpoint) {
+    @media screen and (min-width: $breakpoint) {
+        @content;
+    }
+}
+
+@mixin sm {
+    @include _media(576px){
+        @content;
+    }
+}
+
+@mixin md {
+    @include _media(768px){
+        @content;
+    }
+}
+
+@mixin lg {
+    @include _media(992px){
+        @content;
+    }
+}
+
+@mixin xl {
+    @include _media(1200px){
+        @content;
+    }
+}
+
+@mixin xxl {
+    @include _media(1400px){
+        @content;
+    }
+}
