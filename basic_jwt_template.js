@@ -89,7 +89,7 @@ async function getToken(token) {
 async function authentificate(req, res, next) {
     const recievedUser = req.params.username || req.body.username
     const authHeader = req.headers["jwt-token"]
-    const token = authHeader || authHeader.split(" ")[1]
+    const token = authHeader && authHeader.split(" ")[1]
     const userToken = await getToken(token)
     if(!token){
         res.status(401).send("No token provided")
