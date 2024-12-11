@@ -4,15 +4,15 @@ const bcrypt = require('bcryptjs')
 const bodyParser = require('body-parser')
 
 const app = express()
-// const verifyTokenAsync = util.promisify(jwt.verify) // USE ONLY WITH TRY CATCH
+const verifyTokenAsync = util.promisify(jwt.verify) // USE ONLY WITH TRY CATCH
 
 app.use(bodyParser.json())
 
 const usersSchema = mongoose.Schema({
     username: {
         type: String,
-        min: [4, "Usernama has to have atleast 4 characters"],
-        max: [16, "Username has to have less than 16 charaters"],
+        minlength: [4, "Usernama has to have atleast 4 characters"],
+        maxlength: [16, "Username has to have less than 16 charaters"],
         requied: true
     },
     password: {
@@ -39,7 +39,7 @@ app.post("login", async function (req, res) {
 
     if (doesExist && bcrypt.compare(password, doesExist.password)) {
         const token = jwt.sign({ username: doesExist.username }, secretKey, { expiresIn: "30d" })
-        res.json({token})
+        res.json({ token })
     } else {
         res.status(400).send("Invalid credentials")
     }
@@ -69,3 +69,34 @@ function authentificateToken(req, res, next) {
 
 app.get("/protected", authentificateToken)
 
+
+
+
+
+
+// how to work with promises.
+// BETTER VERSION
+
+async function getToken(token) {
+    try {
+        const user = await verifyTokenAsync(token, secretKey)
+        return user
+    } catch (error) {
+        return null
+    }
+}
+
+async function authentificate(req, res, next) {
+    const recievedUser = req.params.username || req.body.username
+    const authHeader = req.headers["jwt-token"]
+    const token = authHeader || authHeader.split(" ")[1]
+    const userToken = await getToken(token)
+    if(!token){
+        res.status(401).send("No token provided")
+    }else if (!userToken || recievedUser != userToken.username) {
+        return res.status(403).send("Inavlid login")
+    }else{
+        req.user = userToken
+        next()
+    }
+}
