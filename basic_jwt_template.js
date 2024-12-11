@@ -18,10 +18,17 @@ const usersSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    roles: {
+        type: String,
+        requied: true,
+        default: ["User"]
     }
 })
 
+
 const User = mongoose.model("User", usersSchema)
+
 
 const secretKey = process.env.JTWKEY
 
@@ -91,12 +98,37 @@ async function authentificate(req, res, next) {
     const authHeader = req.headers["jwt-token"]
     const token = authHeader && authHeader.split(" ")[1]
     const userToken = await getToken(token)
-    if(!token){
+    if (!token) {
         res.status(401).send("No token provided")
-    }else if (!userToken || recievedUser != userToken.username) {
+    } else if (!userToken || recievedUser != userToken.username) {
         return res.status(403).send("Inavlid login")
-    }else{
+    } else {
         req.user = userToken
         next()
     }
 }
+
+
+// Authorization
+
+function authorizeRoles(...allowedRoles) {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).send("User not found")
+        }
+        const userRoles = req.user.roles
+        const hasRole = userRoles.some(role => allowedRoles.includes(role))
+        if (!hasRole) {
+            return res.status(403).send("Unauthorized access")
+        }
+        next()
+    }
+}
+
+app.use("/secret",
+    authentificate,
+    authorizeRoles("admin")
+)
+app.get("/secret", function (req, res) {
+    // send json or whantever
+})
