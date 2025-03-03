@@ -1,0 +1,15 @@
+function simpleInputParser(e) {
+    e.preventDefault()
+    const body = {}
+    const input = e.target.querySelectorAll("input").forEach((e) => {
+        if (e.type === "checkbox") {
+            body[e.name] = e.checked
+        } else if (e.type === "radio") {
+            if (e.checked) body[e.name] = e.value
+        } else {
+            body[e.name] = e.value
+        }
+    })
+    console.log(body)
+    return body
+}
