@@ -12,11 +12,19 @@
  * @throws {Error} If the offset is not a number.
  * @throws {Error} If the easing function is not a string.
  */
-function smoothScroll(target, options = { duration: 500, offset: 0, easing: "easeInOutQuad" }) {
-    if (typeof target !== "string" && !(target instanceof HTMLElement)) { throw new Error("Error on smoothScroll: provided target must be String or HTMLElement.") }
-    if (typeof options.duration !== "number") { throw new Error("Error on smoothScroll: provided options.durations must be a number.") }
-    if (typeof options.offset !== "number") { throw new Error("Error on smoothScroll: provided options.offset must be a number.") }
-    if (typeof options.easing !== "string") { throw new Error("Error on smoothScroll: provided options.easing must be a String.") }
+function smoothScroll(target, options) {
+    if (typeof target !== "string" && !(target instanceof HTMLElement)) { throw new Error("TypeError on smoothScroll(): provided target must be String or HTMLElement.") }
+    if (typeof options !== "object" || Array.isArray(options)) { throw new Error("TypeError on smoothScroll: provided options must be an Object.") }
+    const defaults = {
+        duration: 500,
+        offset: 0,
+        easing: "easeInOutQuad"
+    }
+    options = { ...defaults, ...options }
+    if (typeof options.duration !== "number") { throw new Error("TypeError on smoothScroll: provided options.durations must be a number.") }
+    if (typeof options.offset !== "number") { throw new Error("TypeError on smoothScroll: provided options.offset must be a number.") }
+    if (typeof options.easing !== "string") { throw new Error("TypeError on smoothScroll: provided options.easing must be a String.") }
+
     const easingFunctions = {
         linear: (t) => t,
         easeInQuad: (t) => t * t,
@@ -26,7 +34,7 @@ function smoothScroll(target, options = { duration: 500, offset: 0, easing: "eas
 
     const element = typeof target === "string" ? document.querySelector(target) : target
     const ease = easingFunctions[options.easing] || options.linear
-    
+
     const start = window.scrollY
     const end = Number(element.offsetTop) - options.offset
     const diff = end - start
