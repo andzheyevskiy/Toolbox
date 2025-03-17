@@ -14,7 +14,7 @@
  */
 function smoothScroll(target, options) {
     if (typeof target !== "string" && !(target instanceof HTMLElement)) { throw new Error("TypeError on smoothScroll(): provided target must be String or HTMLElement.") }
-    if (typeof options !== "object" || Array.isArray(options)) { throw new Error("TypeError on smoothScroll: provided options must be an Object.") }
+    if (options != undefined && (typeof options !== "object" || Array.isArray(options))) { throw new Error("TypeError on smoothScroll: provided options must be an Object.") }
     const defaults = {
         duration: 500,
         offset: 0,
@@ -33,7 +33,7 @@ function smoothScroll(target, options) {
     }
 
     const element = typeof target === "string" ? document.querySelector(target) : target
-    const ease = easingFunctions[options.easing] || options.linear
+    const ease = easingFunctions[options.easing] || easingFunctions.easeInQuad
 
     const start = window.scrollY
     const end = Number(element.offsetTop) - options.offset
